@@ -1,0 +1,39 @@
+  322  cat > Pets.txt
+  323  cat > PackAnimals.txt
+  324  cat Pets.txt PackAnimals.txt > HumanFriends.txt
+  325  cat HumanFriends.txt
+  326  cat > Pets.txt
+  327  cat > PackAnimals.txt
+  328  cat Pets.txt PackAnimals.txt > HumanFfriend.txt
+  329  cat HumanFfriend.txt
+  330  ls
+  331  mkdir MyFiles
+  332  mv HumanFfriend.txt MyFiles/
+  333  ls
+  334  MyFiles/
+  335  ls MyFiles/
+  336  cd MyFiles/
+  337  mv HumanFfriend.txt HumanFriends.txt
+  338  ls
+  339  cd/
+  340  cd
+  341  sudo apt update
+  342  sudo apt install software-properties-common
+  343  sudo add-apt-repository mysql-apt-config
+  344  sudo snap install mysql
+  345  sudo snap find opera
+  346  sudo snap find mysql
+  347*
+  348  sudo add-apt-repository mysql-apt-config
+  349  wget https://dev.mysql.com/get/mysql-apt-config_0.8.17-1_all.deb
+  350  sudo dpkg -i mysql-apt-config_0.8.17-1_all.deb
+  351  sudo apt-get update
+  352  sudo apt-get install mysql-server
+  353  sudo dpkg -i example-package.deb
+  354  dpkg -l
+  355  sudo dpkg -i file.deb
+  356  sudo dpkg -i git.deb
+  357  wget http://archive.ubuntu.com/ubuntu/pool/universe/c/cowsay/cowsay_3.03+dfsg2-4_all.deb
+  358  sudo dpkg -i cowsay_3.03+dfsg2-4_all.deb
+  359  sudo dpkg -r cowsay
+  360  history

@@ -1,0 +1,158 @@
+koryun@koryun:~$ sudo mysql
+[sudo] password for koryun:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.35-0ubuntu0.22.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+     * Создание базы данных и таблиц:
+
+
+mysql> CREATE DATABASE IF NOT EXISTS HumanFriends;
+Query OK, 1 row affected (0,03 sec)
+
+mysql> USE HumanFriends;
+Database changed
+mysql> CREATE TABLE Pets (
+    ->     ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Name VARCHAR(255),
+    ->     Type VARCHAR(50),
+    ->     BirthDate DATE,
+    ->     Commands VARCHAR(255)
+    -> );
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> CREATE TABLE PackAnimals (
+    ->     ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Name VARCHAR(255),
+    ->     Type VARCHAR(50),
+    ->     BirthDate DATE,
+    ->     Commands VARCHAR(255)
+    -> );
+Query OK, 0 rows affected (0,02 sec)
+
+
+            *Заполнение таблиц данными:
+
+
+mysql> INSERT INTO Pets (Name, Type, BirthDate, Commands)
+    -> VALUES
+    ->     ('Fido', 'Dog', '2020-01-01', 'Sit, Stay, Fetch'),
+    ->     ('Whiskers', 'Cat', '2019-05-15', 'Sit, Pounce'),
+    ->     ('Hammy', 'Hamster', '2021-03-10', 'Roll, Hide'),
+    ->     ('Buddy', 'Dog', '2018-12-10', 'Sit, Paw, Bark'),
+    ->     ('Smudge', 'Cat', '2020-02-20', 'Sit, Pounce, Scratch'),
+    ->     ('Peanut', 'Hamster', '2021-08-01', 'Roll, Spin'),
+    ->     ('Bella', 'Dog', '2019-11-11', 'Sit, Stay, Roll'),
+    ->     ('Oliver', 'Cat', '2020-06-30', 'Meow, Scratch, Jump');
+Query OK, 8 rows affected (0,04 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO PackAnimals (Name, Type, BirthDate, Commands)
+    -> VALUES
+    ->     ('Thunder', 'Horse', '2015-07-21', 'Trot, Canter, Gallop'),
+    ->     ('Sandy', 'Camel', '2016-11-03', 'Walk, Carry Load'),
+    ->     ('Eeyore', 'Donkey', '2017-09-18', 'Walk, Carry Load, Bray'),
+    ->     ('Storm', 'Horse', '2014-05-05', 'Trot, Canter'),
+    ->     ('Dune', 'Camel', '2018-12-12', 'Walk, Sit'),
+    ->     ('Burro', 'Donkey', '2019-01-23', 'Walk, Bray, Kick'),
+    ->     ('Blaze', 'Horse', '2016-02-29', 'Trot, Jump, Gallop'),
+    ->     ('Sahara', 'Camel', '2015-08-14', 'Walk, Run');
+Query OK, 8 rows affected (0,01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+
+          *Удаление записей о верблюдах и объединение таблиц:
+
+
+mysql> DELETE FROM PackAnimals WHERE Type = 'Camel';
+Query OK, 3 rows affected (0,01 sec)
+
+mysql> CREATE TABLE HorsesAndDonkeys AS
+    -> SELECT * FROM PackAnimals WHERE Type IN ('Horse', 'Donkey');
+Query OK, 5 rows affected (0,04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> DROP TABLE PackAnimals;
+Query OK, 0 rows affected (0,02 sec)
+
+
+
+           *Создание новой таблицы для животных в возрасте от 1 до 3 лет и вычисление их возраста:
+
+
+mysql> CREATE TABLE YoungAnimals AS
+    -> SELECT * FROM Pets
+    -> WHERE TIMESTAMPDIFF(YEAR, BirthDate, CURDATE()) BETWEEN 1 AND 3;
+Query OK, 5 rows affected (0,04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT ID, Name, TIMESTAMPDIFF(YEAR, BirthDate, CURDATE()) AS AgeYears,
+    ->     TIMESTAMPDIFF(MONTH, BirthDate, CURDATE()) % 12 AS AgeMonths
+    -> FROM YoungAnimals;
++----+--------+----------+-----------+
+| ID | Name   | AgeYears | AgeMonths |
++----+--------+----------+-----------+
+|  1 | Fido   |        3 |        11 |
+|  3 | Hammy  |        2 |         8 |
+|  5 | Smudge |        3 |         9 |
+|  6 | Peanut |        2 |         4 |
+|  8 | Oliver |        3 |         5 |
++----+--------+----------+-----------+
+5 rows in set (0,01 sec)
+
+
+
+        *Объединение всех созданных таблиц в одну:
+
+
+mysql> CREATE TABLE AllAnimals AS
+    -> SELECT * FROM Pets
+    -> UNION
+    -> SELECT * FROM HorsesAndDonkeys
+    -> UNION
+    -> SELECT * FROM YoungAnimals;
+Query OK, 13 rows affected (0,04 sec)
+Records: 13  Duplicates: 0  Warnings: 0
+
+
+mysql> SHOW TABLES;
++------------------------+
+| Tables_in_HumanFriends |
++------------------------+
+| AllAnimals             |
+| HorsesAndDonkeys       |
+| Pets                   |
+| YoungAnimals           |
++------------------------+
+4 rows in set (0,01 sec)
+
+mysql> SELECT * FROM AllAnimals;
++----+----------+---------+------------+------------------------+
+| ID | Name     | Type    | BirthDate  | Commands               |
++----+----------+---------+------------+------------------------+
+|  1 | Fido     | Dog     | 2020-01-01 | Sit, Stay, Fetch       |
+|  2 | Whiskers | Cat     | 2019-05-15 | Sit, Pounce            |
+|  3 | Hammy    | Hamster | 2021-03-10 | Roll, Hide             |
+|  4 | Buddy    | Dog     | 2018-12-10 | Sit, Paw, Bark         |
+|  5 | Smudge   | Cat     | 2020-02-20 | Sit, Pounce, Scratch   |
+|  6 | Peanut   | Hamster | 2021-08-01 | Roll, Spin             |
+|  7 | Bella    | Dog     | 2019-11-11 | Sit, Stay, Roll        |
+|  8 | Oliver   | Cat     | 2020-06-30 | Meow, Scratch, Jump    |
+|  1 | Thunder  | Horse   | 2015-07-21 | Trot, Canter, Gallop   |
+|  3 | Eeyore   | Donkey  | 2017-09-18 | Walk, Carry Load, Bray |
+|  4 | Storm    | Horse   | 2014-05-05 | Trot, Canter           |
+|  6 | Burro    | Donkey  | 2019-01-23 | Walk, Bray, Kick       |
+|  7 | Blaze    | Horse   | 2016-02-29 | Trot, Jump, Gallop     |
++----+----------+---------+------------+------------------------+
+13 rows in set (0,00 sec)
+
+mysql>
